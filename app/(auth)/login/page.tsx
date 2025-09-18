@@ -1,10 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
+          <div className="text-sm text-slate-500">Loading...</div>
+        </main>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,7 +61,6 @@ export default function LoginPage() {
     // Redirect to the requested page (defaults to News)
     setLoading(false);
     router.replace(redirectTo);
-    return;
   }
 
   return (
@@ -56,7 +69,7 @@ export default function LoginPage() {
         <form onSubmit={onSubmit} className="space-y-6 bg-white border rounded-2xl p-8 shadow-md">
           <header className="flex flex-col items-start gap-1">
             <h1 className="text-2xl font-semibold">Sign in</h1>
-            <p className="text-sm text-slate-500">Welcome back — sign in to continue.</p>
+            <p className="text-sm text-slate-500">Welcome back - sign in to continue.</p>
           </header>
 
           {clientError && <div className="text-red-600 text-sm">{clientError}</div>}
