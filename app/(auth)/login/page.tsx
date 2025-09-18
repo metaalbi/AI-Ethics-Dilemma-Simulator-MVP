@@ -1,24 +1,10 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
-          <div className="text-sm text-slate-500">Loading...</div>
-        </main>
-      }
-    >
-      <LoginForm />
-    </Suspense>
-  );
-}
-
-function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,7 +12,6 @@ function LoginForm() {
   const [clientError, setClientError] = useState<string | null>(null);
 
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,7 +25,7 @@ function LoginForm() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMsg(error.message);
       setLoading(false);
@@ -54,7 +39,10 @@ function LoginForm() {
       // ignore error
     }
 
-    const redirectParam = searchParams.get("redirectedFrom");
+    const redirectParam =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("redirectedFrom")
+        : null;
     const redirectTo =
       redirectParam && redirectParam.startsWith("/") ? redirectParam : "/news";
 
