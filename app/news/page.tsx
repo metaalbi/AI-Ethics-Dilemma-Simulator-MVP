@@ -3,16 +3,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Glass } from '@/components/ui/glass';
-
-interface NewsItem {
-  id: number;
-  title: string;
-  body: string;
-  author_name: string;
-  created_at: string;
-}
+import { useAuth } from '@/hooks/useAuth';
+import type { NewsItem } from '@/types';
 
 export default function NewsPage() {
+  const { user, isLoading: authLoading } = useAuth(true); // Require authentication
   const [news, setNews] = useState<NewsItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -25,12 +20,16 @@ export default function NewsPage() {
 
   async function fetchNews() {
     try {
-      const { data, error } = await supabase
-        .from('news')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const response = await fetch('/api/news');
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Handle unauthorized access
+          window.location.href = '/login?returnUrl=/news';
+          return;
+        }
+        throw new Error('Failed to fetch news');
+      }
+      const data = await response.json();
       setNews(data || []);
     } catch (error) {
       console.error('Error fetching news:', error);
@@ -39,6 +38,21 @@ export default function NewsPage() {
     }
   }
 
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-8"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4 mx-auto"></div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Only show content if authenticated
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="max-w-7xl mx-auto">
