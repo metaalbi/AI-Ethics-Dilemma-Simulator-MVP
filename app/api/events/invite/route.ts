@@ -1,9 +1,35 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { createClient } from '@supabase/supabase-js';
+import { createEvent } from 'ics';
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+interface Event {
+  id: number;
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  location?: string;
+  organizer?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface RequestBody {
+  eventId: number;
+}
+
+// Initialize Resend with runtime check
+let resend: Resend;
+try {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is required');
+  }
+  resend = new Resend(process.env.RESEND_API_KEY);
+} catch (error) {
+  console.error('Failed to initialize Resend:', error);
+}
 
 export async function POST(req: Request) {
   try {
@@ -14,18 +40,22 @@ export async function POST(req: Request) {
     }
 
     const cookieStore = cookies();
-    const token = cookieStore.get('sb-access-token')?.value || cookieStore.get('supabase-auth-token')?.value || '';
-
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       {
-        global: {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options });
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options });
           },
         },
-      },
+      }
     );
 
     const {
