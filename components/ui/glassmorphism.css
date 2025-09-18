@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .glass-effect {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+
+  .glass-button {
+    @apply glass-effect hover:bg-white/80 transition-all duration-300 active:scale-95;
+  }
+
+  .glass-card {
+    @apply glass-effect rounded-2xl p-6;
+  }
+
+  .glass-input {
+    @apply glass-effect rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30;
+  }
+
+  .glass-nav {
+    @apply glass-effect sticky top-0 z-50;
+  }
+}
+
+:root {
+  --iaca-blue: #004B87;
+  --iaca-light-blue: #0072C6;
+}
+
+.text-iaca-blue {
+  color: var(--iaca-blue);
+}
+
+.bg-iaca-blue {
+  background-color: var(--iaca-blue);
+}
+
+.border-iaca-blue {
+  border-color: var(--iaca-blue);
+}
