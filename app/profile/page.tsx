@@ -270,7 +270,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 className="text-sm text-slate-600 mb-1">Full Name</h3>
-                <p className="text-gray-900">{alumni.title} {alumni.f_name} {alumni.l_name}</p>
+                <p className="text-gray-900">{alumni.f_name} {alumni.l_name}</p>
               </div>
               <div>
                 <h3 className="text-sm text-slate-600 mb-1">Gender</h3>
