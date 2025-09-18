@@ -57,18 +57,18 @@ export default function NavBar() {
           {/* Desktop navigation */}
           <div className="hidden md:block">
             <div className="flex items-center space-x-4">
-              <Link
-                href="/news"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive("/news")
-                    ? "text-iaca-blue bg-blue-50"
-                    : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
-                }`}
-              >
-                News
-              </Link>
               {user && (
                 <>
+                  <Link
+                    href="/news"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive("/news")
+                        ? "text-iaca-blue bg-blue-50"
+                        : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
+                    }`}
+                  >
+                    News
+                  </Link>
                   <Link
                     href="/profile"
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -169,18 +169,18 @@ export default function NavBar() {
       {/* Mobile menu */}
       <div className={`${isOpen ? "block" : "hidden"} md:hidden glass-effect`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          <Link
-            href="/news"
-            className={`block px-3 py-2 rounded-md text-base font-medium ${
-              isActive("/news")
-                ? "text-iaca-blue bg-blue-50"
-                : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
-            }`}
-          >
-            News
-          </Link>
           {user && (
             <>
+              <Link
+                href="/news"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive("/news")
+                    ? "text-iaca-blue bg-blue-50"
+                    : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
+                }`}
+              >
+                News
+              </Link>
               <Link
                 href="/profile"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
