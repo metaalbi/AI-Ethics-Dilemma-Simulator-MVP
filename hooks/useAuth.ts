@@ -26,7 +26,11 @@ export function useAuth(requireAuth = false) {
           : { data: false };
 
         setAuthState({
-          user,
+          user: user ? {
+            id: user.id,
+            email: user.email || '',
+            // add other required properties from your User type
+          } : null,
           isAdmin: !!admin,
           isLoading: false,
         });
@@ -54,7 +58,11 @@ export function useAuth(requireAuth = false) {
         : { data: false };
 
       setAuthState({
-        user: user || null,
+        user: user ? {
+          id: user.id,
+          email: user.email || '',
+          // add other required properties from your User type
+        } : null,
         isAdmin: !!admin,
         isLoading: false,
       });
