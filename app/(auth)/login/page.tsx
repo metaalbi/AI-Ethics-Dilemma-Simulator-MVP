@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
@@ -9,6 +10,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [clientError, setClientError] = useState<string | null>(null);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,8 +40,14 @@ export default function LoginPage() {
       // ignore error
     }
 
-    // go to the profile screen (we'll build it next)
-    window.location.href = "/profile";
+    const redirectParam = searchParams.get("redirectedFrom");
+    const redirectTo =
+      redirectParam && redirectParam.startsWith("/") ? redirectParam : "/news";
+
+    // Redirect to the requested page (defaults to News)
+    setLoading(false);
+    router.replace(redirectTo);
+    return;
   }
 
   return (

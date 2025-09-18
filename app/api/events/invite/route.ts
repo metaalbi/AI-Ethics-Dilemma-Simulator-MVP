@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { CookieOptions, createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { createEvent } from 'ics';
 
 interface Event {
   id: number;
@@ -20,15 +19,17 @@ interface RequestBody {
   eventId: number;
 }
 
-// Initialize Resend with runtime check
-let resend: Resend;
-try {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY is required');
+const resendApiKey = process.env.RESEND_API_KEY;
+const resendFromEmail = process.env.FROM_EMAIL;
+let resend: Resend | null = null;
+
+if (resendApiKey) {
+  try {
+    resend = new Resend(resendApiKey);
+  } catch (error) {
+    console.error('Failed to initialize Resend client:', error);
+    resend = null;
   }
-  resend = new Resend(process.env.RESEND_API_KEY);
-} catch (error) {
-  console.error('Failed to initialize Resend:', error);
 }
 
 export async function POST(req: Request) {
@@ -82,6 +83,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
+    if (!resend || !resendFromEmail) {
+      console.error('Email service not configured: RESEND_API_KEY and FROM_EMAIL must be set');
+      return NextResponse.json({ error: 'Email service is not configured' }, { status: 503 });
+    }
+
     const ics = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
@@ -120,7 +126,7 @@ export async function POST(req: Request) {
     ];
 
     const { error: sendError } = await resend.emails.send({
-      from: process.env.FROM_EMAIL!,
+      from: resendFromEmail,
       to: user.email!,
       subject: `Event: ${event.title}`,
       html,

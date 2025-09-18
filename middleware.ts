@@ -8,6 +8,30 @@ export const config = {
 };
 
 export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  const isStaticAsset =
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon') ||
+    pathname.startsWith('/icon') ||
+    pathname.startsWith('/apple-icon') ||
+    /\.[a-zA-Z0-9]+$/.test(pathname);
+
+  if (isStaticAsset) {
+    return NextResponse.next();
+  }
+
+  const publicRoutes = new Set([
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+  ]);
+
+  if (publicRoutes.has(pathname)) {
+    return NextResponse.next();
+  }
+
   const hasSession =
     req.cookies.has('sb-access-token') || req.cookies.has('supabase-auth-token');
 
