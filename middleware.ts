@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 
 export const config = {
   matcher: [
@@ -7,7 +8,7 @@ export const config = {
   ],
 };
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const isStaticAsset =
@@ -32,26 +33,31 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const hasSession =
-    req.cookies.has('sb-access-token') || req.cookies.has('supabase-auth-token');
+  // Create a response we can pass to the client and also let Supabase
+  // set/refresh cookies on when needed.
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
 
-  if (!hasSession) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
     const url = req.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('redirectedFrom', req.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
 
-  const response = NextResponse.next();
-
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set(
+  // Optional security headers
+  res.headers.set('X-Frame-Options', 'DENY');
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.headers.set('X-XSS-Protection', '1; mode=block');
+  res.headers.set(
     'Content-Security-Policy',
     "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';",
   );
 
-  return response;
+  return res;
 }

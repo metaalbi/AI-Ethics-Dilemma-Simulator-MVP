@@ -89,6 +89,16 @@ export default function NavBar() {
               {user && (
                 <>
                   <Link
+                    href="/events"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive("/events")
+                        ? "text-iaca-blue bg-blue-50"
+                        : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
+                    }`}
+                  >
+                    Events
+                  </Link>
+                  <Link
                     href="/news"
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive("/news")
@@ -110,6 +120,16 @@ export default function NavBar() {
                   </Link>
                   {isAdmin && (
                     <>
+                      <Link
+                        href="/admin/events"
+                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          isActive("/admin/events")
+                            ? "text-iaca-blue bg-blue-50"
+                            : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
+                        }`}
+                      >
+                        Manage Events
+                      </Link>
                       <Link
                         href="/admin/news"
                         className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -201,6 +221,16 @@ export default function NavBar() {
           {user && (
             <>
               <Link
+                href="/events"
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive("/events")
+                    ? "text-iaca-blue bg-blue-50"
+                    : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
+                }`}
+              >
+                Events
+              </Link>
+              <Link
                 href="/news"
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   isActive("/news")
@@ -222,6 +252,16 @@ export default function NavBar() {
               </Link>
               {isAdmin && (
                 <>
+                  <Link
+                    href="/admin/events"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${
+                      isActive("/admin/events")
+                        ? "text-iaca-blue bg-blue-50"
+                        : "text-gray-600 hover:text-iaca-blue hover:bg-blue-50"
+                    }`}
+                  >
+                    Manage Events
+                  </Link>
                   <Link
                     href="/admin/news"
                     className={`block px-3 py-2 rounded-md text-base font-medium ${

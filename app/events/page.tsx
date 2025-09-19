@@ -131,6 +131,7 @@ export default function EventsPage() {
       const res = await fetch('/api/events/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ eventId }),
       });
 

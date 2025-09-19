@@ -91,12 +91,20 @@ function toLocalInputValue(value: string) {
 }
 
 function getErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof Error && error.message) {
-    return error.message;
+  // Handle JS Errors
+  if (error instanceof Error && error.message) return error.message;
+  // Handle Supabase/PostgREST style objects
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in (error as Record<string, unknown>) &&
+    typeof (error as Record<string, unknown>).message === 'string'
+  ) {
+    const e = error as { message: string; details?: string | null; hint?: string | null };
+    const extras = [e.details, e.hint].filter(Boolean).join(' ');
+    return [e.message, extras].filter(Boolean).join(' — ');
   }
-  if (typeof error === 'string') {
-    return error;
-  }
+  if (typeof error === 'string') return error;
   return fallback;
 }
 
@@ -271,24 +279,29 @@ export default function AdminEventsPage() {
     setCreateSubmitting(true);
 
     try {
-      const { error } = await supabase.from('events').insert([
-        {
-          title: trimmedTitle,
-          description: createForm.description || null,
-          location: createForm.location || null,
-          department: createForm.department || null,
-          contact_point: createForm.contact_point || null,
-          region: createForm.region || null,
-          starts_at: start.toISOString(),
-          ends_at: end.toISOString(),
-          created_by: user?.id ?? null,
-          status: createForm.status,
-        },
-      ]);
+      const payload: any = {
+        title: trimmedTitle,
+        description: createForm.description || null,
+        location: createForm.location || null,
+        department: createForm.department || null,
+        contact_point: createForm.contact_point || null,
+        region: createForm.region || null,
+        starts_at: start.toISOString(),
+        ends_at: end.toISOString(),
+        created_by: user?.id ?? null,
+        status: createForm.status,
+      };
 
-      if (error) {
-        throw error;
+      let { error } = await supabase.from('events').insert([payload]);
+
+      // Fallback for environments missing the `status` column
+      if (error && typeof (error as any).message === 'string' && (error as any).message.includes("'status'")) {
+        delete payload.status;
+        const retry = await supabase.from('events').insert([payload]);
+        error = retry.error;
       }
+
+      if (error) throw error;
 
       setCreateForm(initialCreateForm);
       setFeedback('Event created successfully.');
@@ -336,20 +349,29 @@ export default function AdminEventsPage() {
     setRowSaving(prev => ({ ...prev, [id]: true }));
 
     try {
-      const { error } = await supabase
+      const updateData: any = {
+        title: trimmedTitle,
+        starts_at: start.toISOString(),
+        ends_at: end.toISOString(),
+        location: editingEvent.location || null,
+        status: editingEvent.status || 'scheduled',
+      };
+
+      let { error } = await supabase
         .from('events')
-        .update({
-          title: trimmedTitle,
-          starts_at: start.toISOString(),
-          ends_at: end.toISOString(),
-          location: editingEvent.location || null,
-          status: editingEvent.status || 'scheduled',
-        })
+        .update(updateData)
         .eq('id', id);
 
-      if (error) {
-        throw error;
+      if (error && typeof (error as any).message === 'string' && (error as any).message.includes("'status'")) {
+        delete updateData.status;
+        const retry = await supabase
+          .from('events')
+          .update(updateData)
+          .eq('id', id);
+        error = retry.error;
       }
+
+      if (error) throw error;
 
       setFeedback('Event updated successfully.');
       setFeedbackType('success');
