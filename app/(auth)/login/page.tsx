@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+
+// Prevent static prerender; this page depends on client-only hooks
+export const dynamic = "force-dynamic";
 
 const FALLBACK_REDIRECT = "/news";
 
@@ -13,7 +16,7 @@ function sanitizeRedirectTarget(raw: string | null): string {
   return raw;
 }
 
-export default function LoginPage() {
+function LoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -174,5 +177,13 @@ export default function LoginPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen grid place-items-center">Loading…</main>}>
+      <LoginContent />
+    </Suspense>
   );
 }
