@@ -137,7 +137,7 @@ export async function POST(req: Request) {
       throw sendError;
     }
 
-    await supabase
+    const { error: inviteLogError } = await supabase
       .from('event_invite_emails')
       .insert([
         {
@@ -146,8 +146,11 @@ export async function POST(req: Request) {
           email_to: user.email,
           status: 'sent',
         },
-      ])
-      .match(() => undefined);
+      ]);
+
+    if (inviteLogError) {
+      console.error('Failed to log invite email:', inviteLogError);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {

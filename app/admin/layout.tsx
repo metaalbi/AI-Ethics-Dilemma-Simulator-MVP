@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -11,37 +11,49 @@ export default function AdminLayout({
 }) {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
+    let isMounted = true;
+
     async function checkAdmin() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          redirect('/login');
+          router.replace('/login');
+          return;
         }
 
-        // Check if user is admin using the is_admin RPC
-        const { data: isAdmin, error } = await supabase.rpc('is_admin', {
+        const { data: adminFlag, error } = await supabase.rpc('is_admin', {
           uid: user.id
         });
 
         if (error) throw error;
-        
-        if (!isAdmin) {
-          redirect('/');
+
+        if (!adminFlag) {
+          router.replace('/');
+          return;
         }
 
-        setIsAdmin(true);
+        if (isMounted) {
+          setIsAdmin(true);
+        }
       } catch (error) {
         console.error('Error checking admin status:', error);
-        redirect('/');
+        router.replace('/');
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     checkAdmin();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router]);
 
   if (loading) {
     return (

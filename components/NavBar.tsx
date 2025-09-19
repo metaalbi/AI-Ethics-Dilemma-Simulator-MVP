@@ -13,21 +13,50 @@ export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      
-      if (user) {
-        const { data: admin } = await supabase.rpc("is_admin", { uid: user.id });
-        setIsAdmin(!!admin);
+    let isMounted = true;
+
+    const applyUserState = async (sessionUser: typeof user) => {
+      if (!isMounted) return;
+      setUser(sessionUser);
+
+      if (sessionUser) {
+        try {
+          const { data: adminFlag, error } = await supabase.rpc("is_admin", { uid: sessionUser.id });
+          if (!isMounted) return;
+          if (error) throw error;
+          setIsAdmin(!!adminFlag);
+        } catch (error) {
+          console.error('Admin check failed:', error);
+          if (isMounted) {
+            setIsAdmin(false);
+          }
+        }
+      } else {
+        setIsAdmin(false);
       }
-    }
-    getUser();
+    };
+
+    (async () => {
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        await applyUserState(currentUser ?? null);
+      } catch (error) {
+        console.error('Failed to load current user:', error);
+        if (isMounted) {
+          setUser(null);
+          setIsAdmin(false);
+        }
+      }
+    })();
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      applyUserState(session?.user ?? null);
     });
-    return () => sub.subscription.unsubscribe();
+
+    return () => {
+      isMounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const isActive = (path: string) => pathname === path;
