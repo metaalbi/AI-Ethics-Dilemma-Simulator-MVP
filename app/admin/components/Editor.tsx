@@ -9,8 +9,8 @@ import Link from "@tiptap/extension-link";
 import { useState } from "react";
 
 interface EditorProps {
-  content: string;
-  onChange: (value: string) => void;
+  initialContent: string;
+  onUpdate: (value: string) => void;
 }
 
 const MenuBar = ({ editor }: { editor: any }) => {
@@ -145,7 +145,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   );
 };
 
-export default function Editor({ content, onChange }: EditorProps) {
+export default function Editor({ initialContent, onUpdate }: EditorProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -163,9 +163,9 @@ export default function Editor({ content, onChange }: EditorProps) {
         openOnClick: false,
       }),
     ],
-    content,
+    content: initialContent,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      onUpdate(editor.getHTML());
     },
     editorProps: {
       attributes: {

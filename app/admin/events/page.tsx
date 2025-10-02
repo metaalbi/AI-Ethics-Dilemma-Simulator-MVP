@@ -27,11 +27,16 @@ interface Filters {
 }
 
 interface EditableEvent {
+  id?: number;
   title: string;
   starts_at: string;
   ends_at: string;
   location: string | null;
   status: string | null;
+  description?: string | null;
+  department?: string | null;
+  contact_point?: string | null;
+  region?: string | null;
 }
 
 interface CreateForm {
@@ -44,6 +49,10 @@ interface CreateForm {
   status: string;
   starts_at: string;
   ends_at: string;
+}
+
+interface ViewModeState {
+  [key: number]: boolean;  // key is event ID, value is whether the event is in edit mode
 }
 
 const statusOptions = [
@@ -91,9 +100,7 @@ function toLocalInputValue(value: string) {
 }
 
 function getErrorMessage(error: unknown, fallback: string) {
-  // Handle JS Errors
   if (error instanceof Error && error.message) return error.message;
-  // Handle Supabase/PostgREST style objects
   if (
     error &&
     typeof error === 'object' &&
@@ -114,13 +121,14 @@ export default function AdminEventsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
 
-  const [filters, setFilters] = useState(initialFilters);
+  const [filters, setFilters] = useState<Filters>(initialFilters);
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [editing, setEditing] = useState<Record<number, EditableEvent>>({});
+  const [viewMode, setViewMode] = useState<ViewModeState>({});
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'success' | 'error' | null>(null);
-  const [createForm, setCreateForm] = useState(initialCreateForm);
+  const [createForm, setCreateForm] = useState<CreateForm>(initialCreateForm);
   const [createSubmitting, setCreateSubmitting] = useState(false);
   const [rowSaving, setRowSaving] = useState<Record<number, boolean>>({});
   const [rowError, setRowError] = useState<Record<number, string | null>>({});
@@ -201,6 +209,7 @@ export default function AdminEventsPage() {
 
       setEvents(data ?? []);
       const editingState: Record<number, EditableEvent> = {};
+      const viewModeState: ViewModeState = {};
       for (const event of data ?? []) {
         editingState[event.id] = {
           title: event.title,
@@ -209,8 +218,10 @@ export default function AdminEventsPage() {
           location: event.location,
           status: event.status || 'scheduled',
         };
+        viewModeState[event.id] = true;  // Set to view mode by default
       }
       setEditing(editingState);
+      setViewMode(viewModeState);
       setRowError({});
     } catch (error) {
       console.error('Failed to load events', error);
@@ -240,6 +251,13 @@ export default function AdminEventsPage() {
         ...prev[id],
         [key]: value,
       },
+    }));
+  }
+
+  function toggleEditMode(id: number) {
+    setViewMode(prev => ({
+      ...prev,
+      [id]: !prev[id]
     }));
   }
 
@@ -294,8 +312,7 @@ export default function AdminEventsPage() {
 
       let { error } = await supabase.from('events').insert([payload]);
 
-      // Fallback for environments missing the `status` column
-      if (error && typeof (error as any).message === 'string' && (error as any).message.includes("'status'")) {
+      if (error && typeof error.message === 'string' && error.message.includes("'status'")) {
         delete payload.status;
         const retry = await supabase.from('events').insert([payload]);
         error = retry.error;
@@ -362,7 +379,7 @@ export default function AdminEventsPage() {
         .update(updateData)
         .eq('id', id);
 
-      if (error && typeof (error as any).message === 'string' && (error as any).message.includes("'status'")) {
+      if (error && typeof error.message === 'string' && error.message.includes("'status'")) {
         delete updateData.status;
         const retry = await supabase
           .from('events')
@@ -403,9 +420,7 @@ export default function AdminEventsPage() {
         .delete()
         .eq('id', id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       setFeedback('Event deleted.');
       setFeedbackType('success');
@@ -610,78 +625,133 @@ export default function AdminEventsPage() {
               const editingState = editing[event.id];
               return (
                 <article key={event.id} className="rounded-lg border bg-card p-4 shadow-sm">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <label className="flex flex-col gap-1 text-sm md:col-span-2">
-                      <span className="font-medium">Title</span>
-                      <input
-                        type="text"
-                        value={editingState?.title ?? ''}
-                        onChange={e => handleEditFieldChange(event.id, 'title', e.target.value)}
-                        className="rounded-md border px-3 py-2"
-                      />
-                    </label>
-                    <label className="flex flex-col gap-1 text-sm">
-                      <span className="font-medium">Starts at</span>
-                      <input
-                        type="datetime-local"
-                        value={editingState?.starts_at ?? ''}
-                        onChange={e => handleEditFieldChange(event.id, 'starts_at', e.target.value)}
-                        className="rounded-md border px-3 py-2"
-                      />
-                    </label>
-                    <label className="flex flex-col gap-1 text-sm">
-                      <span className="font-medium">Ends at</span>
-                      <input
-                        type="datetime-local"
-                        value={editingState?.ends_at ?? ''}
-                        onChange={e => handleEditFieldChange(event.id, 'ends_at', e.target.value)}
-                        className="rounded-md border px-3 py-2"
-                      />
-                    </label>
-                    <label className="flex flex-col gap-1 text-sm">
-                      <span className="font-medium">Location</span>
-                      <input
-                        type="text"
-                        value={editingState?.location ?? ''}
-                        onChange={e => handleEditFieldChange(event.id, 'location', e.target.value)}
-                        className="rounded-md border px-3 py-2"
-                      />
-                    </label>
-                    <label className="flex flex-col gap-1 text-sm">
-                      <span className="font-medium">Status</span>
-                      <select
-                        value={editingState?.status ?? 'scheduled'}
-                        onChange={e => handleEditFieldChange(event.id, 'status', e.target.value)}
-                        className="rounded-md border px-3 py-2"
-                      >
-                        {statusOptions.map(option => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  {rowError[event.id] && (
-                    <p className="mt-3 text-sm text-destructive">{rowError[event.id]}</p>
-                  )}
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleSave(event.id)}
-                      disabled={rowSaving[event.id]}
-                      className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50"
-                    >
-                      {rowSaving[event.id] ? 'Saving…' : 'Save changes'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(event.id)}
-                      disabled={rowSaving[event.id]}
-                      className="rounded-md border border-destructive px-4 py-2 text-sm font-medium text-destructive transition hover:bg-destructive/10 disabled:opacity-50"
-                    >
-                      Delete
-                    </button>
+                  <div className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="flex flex-col gap-1 text-sm md:col-span-2">
+                        <span className="font-medium">Title</span>
+                        {viewMode[event.id] ? (
+                          <div className="py-2">{editingState?.title}</div>
+                        ) : (
+                          <input
+                            type="text"
+                            value={editingState?.title ?? ''}
+                            onChange={e => handleEditFieldChange(event.id, 'title', e.target.value)}
+                            className="rounded-md border px-3 py-2"
+                          />
+                        )}
+                      </div>
+                    
+                      <div className="flex flex-col gap-1 text-sm">
+                        <span className="font-medium">Starts at</span>
+                        {viewMode[event.id] ? (
+                          <div className="py-2">
+                            {new Date(event.starts_at).toLocaleString()}
+                          </div>
+                        ) : (
+                          <input
+                            type="datetime-local"
+                            value={editingState?.starts_at ?? ''}
+                            onChange={e => handleEditFieldChange(event.id, 'starts_at', e.target.value)}
+                            className="rounded-md border px-3 py-2"
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-1 text-sm">
+                        <span className="font-medium">Ends at</span>
+                        {viewMode[event.id] ? (
+                          <div className="py-2">
+                            {new Date(event.ends_at).toLocaleString()}
+                          </div>
+                        ) : (
+                          <input
+                            type="datetime-local"
+                            value={editingState?.ends_at ?? ''}
+                            onChange={e => handleEditFieldChange(event.id, 'ends_at', e.target.value)}
+                            className="rounded-md border px-3 py-2"
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-1 text-sm">
+                        <span className="font-medium">Location</span>
+                        {viewMode[event.id] ? (
+                          <div className="py-2">{event.location || 'Not specified'}</div>
+                        ) : (
+                          <input
+                            type="text"
+                            value={editingState?.location ?? ''}
+                            onChange={e => handleEditFieldChange(event.id, 'location', e.target.value)}
+                            className="rounded-md border px-3 py-2"
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-1 text-sm">
+                        <span className="font-medium">Status</span>
+                        {viewMode[event.id] ? (
+                          <div className="py-2">
+                            {editingState?.status || 'Scheduled'}
+                          </div>
+                        ) : (
+                          <select
+                            value={editingState?.status ?? 'scheduled'}
+                            onChange={e => handleEditFieldChange(event.id, 'status', e.target.value)}
+                            className="rounded-md border px-3 py-2"
+                          >
+                            {statusOptions.map(option => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+
+                      <div className="flex justify-end items-center gap-2 md:col-span-2 pt-4 border-t">
+                        {viewMode[event.id] ? (
+                          <button
+                            type="button"
+                            onClick={() => toggleEditMode(event.id)}
+                            className="flex items-center gap-1 glass-button px-4 py-2 text-sm hover:bg-blue-50 transition-colors"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                              <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clipRule="evenodd" />
+                            </svg>
+                            Edit Event
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => toggleEditMode(event.id)}
+                              className="px-4 py-2 text-sm border rounded hover:bg-gray-50"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSave(event.id)}
+                              disabled={rowSaving[event.id]}
+                              className="flex items-center gap-1 glass-button px-4 py-2 text-sm hover:bg-blue-50 transition-colors"
+                            >
+                              {rowSaving[event.id] ? 'Saving...' : 'Save Changes'}
+                            </button>
+                          </>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(event.id)}
+                          className="flex items-center gap-1 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </article>
               );
