@@ -148,6 +148,95 @@ DILEMMAS = [
             {"name": "EU Whistleblower Protection (overview)", "url": "https://commission.europa.eu/policies/justice-and-fundamental-rights/whistleblower-protection_en"}
         ],
     },
+    {
+        "id": "collective_action_or_collusion",
+        "title": "Competitors propose a 'clean business' pact—plus a pricing clause.",
+        "context": (
+            "Ahead of a big donor-funded RFP, several major suppliers invite you (as the buyer) to endorse a "
+            "'Collective Action Charter' to refuse facilitation payments and share red flags. Hidden in the draft is a clause "
+            "that signatories will 'not undercut below a sustainable floor price'."
+        ),
+        "choices": [
+            {"key": "A", "label": "Support the anti-bribery charter but demand removal of any pricing/market-allocation language; involve Competition/Legal.", "score": 3,
+             "feedback": "Best balance: collective action on integrity is positive, but price floors risk anti-competitive collusion. Keep integrity collaboration, remove market/pricing coordination."},
+            {"key": "B", "label": "Reject the charter entirely—too risky.", "score": 1,
+             "feedback": "Overly cautious: you lose a chance to improve integrity. Safer to fix the clause than walk away."},
+            {"key": "C", "label": "Approve as-is—it helps fight corruption and simplifies evaluation.", "score": 0,
+             "feedback": "High antitrust risk: price floors/market allocation can be illegal even with good intent."},
+            {"key": "D", "label": "Stay neutral and let suppliers sign among themselves; keep it off the record.", "score": 1,
+             "feedback": "Avoids direct buyer involvement but ignores antitrust red flags that could taint the tender."},
+        ],
+        "resources": [
+            {"name": "OECD – Collective Action in Anti-Corruption (but mind competition law)", "url": "https://www.oecd.org/corruption/"},
+            {"name": "ICCA/ICN materials on cartel risks", "url": "https://www.internationalcompetitionnetwork.org/"},
+        ],
+    },
+    {
+        "id": "third_party_market_access_fee",
+        "title": "Agent requests 15% 'market access fee' in a high-risk country.",
+        "context": (
+            "A local intermediary promises permits and introductions for a time-sensitive project, asking for a 15% success fee. "
+            "Basic due diligence flags a politically exposed relative and vague services. The program team says 'we’ll lose funding if we delay.'"
+        ),
+        "choices": [
+            {"key": "A", "label": "Pause engagement; run enhanced due diligence (PEP checks, scope, audit rights), document necessity, and cap/clarify services before any contract.", "score": 3,
+             "feedback": "Right path: tighten scope, verify beneficial ownership, add audit/termination rights, and ensure the fee matches legitimate services."},
+            {"key": "B", "label": "Proceed now but add anti-bribery reps/warranties and pay only after results.", "score": 1,
+             "feedback": "Controls help, but proceeding without enhanced DD in a high-risk context is weak risk management."},
+            {"key": "C", "label": "Reject any intermediary use; internal staff will handle approvals informally.", "score": 1,
+             "feedback": "Avoids the agent but invites other risks (tipping-off, undue influence). Structure risk, don’t ignore it."},
+            {"key": "D", "label": "Split the fee across multiple small contracts to avoid scrutiny.", "score": 0,
+             "feedback": "Classic red flag. Fragmentation to evade controls increases misconduct risk."},
+        ],
+        "resources": [
+            {"name": "ISO 37001 (Anti-Bribery) – Third-party controls", "url": "https://www.iso.org/standard/65034.html"},
+            {"name": "FCPA/UKBA guidance on intermediaries", "url": "https://www.justice.gov/criminal-fraud/fcpa"},
+        ],
+    },
+    {
+        "id": "emergency_procurement_derogation",
+        "title": "A 'temporary emergency' is used to skip competition—again.",
+        "context": (
+            "Operations request a direct award citing 'emergency' to keep services running. Similar waivers were used twice this year; "
+            "the same vendor is named as the only viable option. No market scan or written justification is provided."
+        ),
+        "choices": [
+            {"key": "A", "label": "Require written emergency justification, minimum market scan, price reasonableness, and a short-term cap—with a plan to run a full tender within a set date.", "score": 3,
+             "feedback": "Balances continuity and integrity: document necessity, scope/price checks, sunset clause, and roadmap to competition."},
+            {"key": "B", "label": "Approve as requested—continuity first; you’ll clean it up later.", "score": 0,
+             "feedback": "Unchecked repetitive waivers create dependency and corruption exposure."},
+            {"key": "C", "label": "Allow a limited direct award but rotate vendors based on informal quotes.", "score": 1,
+             "feedback": "Rotation reduces concentration risk but remains opaque without proper justification and record."},
+            {"key": "D", "label": "Deny outright and halt operations until a full tender completes.", "score": 1,
+             "feedback": "Protects integrity but ignores operational reality; structured interim controls are better."},
+        ],
+        "resources": [
+            {"name": "World Bank – Emergency procurement good practice", "url": "https://www.worldbank.org"},
+            {"name": "UNCITRAL – Procurement Model Law (derogations)", "url": "https://uncitral.un.org/"},
+        ],
+    },
+    {
+        "id": "nepotism_hidden_subcontractor",
+        "title": "Director’s spouse appears as a subcontractor after award.",
+        "context": (
+            "After awarding a framework agreement, the prime vendor submits a delivery plan that quietly includes the Director’s spouse "
+            "as a paid subcontractor. No prior conflict was declared. The Director pressures the team to 'approve quickly—no changes to price.'"
+        ),
+        "choices": [
+            {"key": "A", "label": "Pause approval; disclose the conflict, require the Director’s recusal, and assess whether to remove/replace the subcontractor or rerun the lot.", "score": 3,
+             "feedback": "Correct controls: transparency, recusal, and remedy to protect fairness and reputational integrity."},
+            {"key": "B", "label": "Approve since pricing is unchanged; note the issue in a private email.", "score": 0,
+             "feedback": "Appearance of favoritism persists; private notes don’t fix unmanaged conflicts."},
+            {"key": "C", "label": "Allow the subcontractor if an external panel certifies capability.", "score": 1,
+             "feedback": "Adds oversight but still weak without recusal and full conflict management."},
+            {"key": "D", "label": "Approve conditionally and promise to review at renewal.", "score": 1,
+             "feedback": "Defers the problem; risk remains during the current term."},
+        ],
+        "resources": [
+            {"name": "OECD – Managing Conflicts of Interest in the Public Service", "url": "https://www.oecd.org/gov/ethics/"},
+            {"name": "TI – Nepotism & patronage guidance", "url": "https://www.transparency.org/"},
+        ],
+    },
 ]
 
 # ---------- SESSION / ANALYTICS ----------
@@ -179,7 +268,7 @@ st.markdown(
 
 with st.expander("About this demo", expanded=False):
     st.write(
-        "This MVP offers four dilemmas touching bribery, conflicts of interest, procurement red flags, and retaliation. "
+        "This MVP offers eight dilemmas touching bribery, conflicts of interest, procurement red flags, collusion, emergency waivers, and retaliation. "
         "We'll later add role-specific variants and AI-generated guidance with citations."
     )
 
@@ -249,20 +338,29 @@ if submit and selected is not None:
         "first_click_s": st.session_state.first_click_s,
     })
 
+    response_count = len(st.session_state.responses)
+
     st.markdown("---")
     st.success(f"Feedback: {chosen['feedback']}")
 
-    total = sum(r["score"] for r in st.session_state.responses)
-    max_score = len(st.session_state.responses) * 3
-    st.metric(label="Your ethics alignment score (MVP)", value=f"{total} / {max_score}")
+    if response_count >= 5:
+        total = sum(r["score"] for r in st.session_state.responses)
+        max_score = response_count * 3
+        st.metric(label="Your ethics alignment score (MVP)", value=f"{total} / {max_score}")
 
-    badge = (
-        "🏆 Integrity Guardian" if total >= 10 else
-        "🛡️ Risk Watcher" if total >= 7 else
-        "🧭 Ethics Explorer" if total >= 4 else
-        "⚠️ High-Risk Zone"
-    )
-    st.metric("Status", badge)
+        badge = (
+            "🏆 Integrity Guardian" if total >= 10 else
+            "🛡️ Risk Watcher" if total >= 7 else
+            "🧭 Ethics Explorer" if total >= 4 else
+            "⚠️ High-Risk Zone"
+        )
+        st.metric("Status", badge)
+    else:
+        remaining = 5 - response_count
+        st.info(
+            "Answer at least five dilemmas to unlock your running score and status badge. "
+            f"{remaining} more to go!"
+        )
 
     with st.expander("Learn more – resources"):
         for r in current["resources"]:
