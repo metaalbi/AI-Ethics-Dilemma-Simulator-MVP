@@ -39,8 +39,8 @@ DILEMMAS = [
              "feedback": "Transparency helps, but does not address the bribery attempt. Escalation needed."},
         ],
         "resources": [
-            {"name": "IACA – Brief on Facilitation Payments", "url": "https://www.iaca.int/resources/facilitation-payments"},
-            {"name": "IACA – Anti-Corruption Legal Frameworks", "url": "https://www.iaca.int/resources/legal-frameworks"},
+            {"name": "Ethics and Integrity", "url": "https://www.iaca.int/online/introduction-to-ethics-and-integrity-management/"},
+            {"name": "IACA Courses", "url": "https://www.iaca.int/online/"},
         ],
     },
     {
@@ -61,7 +61,8 @@ DILEMMAS = [
              "feedback": "Direct COI and appearance of bias; undermines RFP integrity."},
         ],
         "resources": [
-            {"name": "IACA – Conflict of Interest Toolkit", "url": "https://www.iaca.int/resources/conflict-of-interest"}
+            {"name": "Open and Tailor Made Trainings", "url": "https://www.iaca.int/index.php?option=com_sppagebuilder&view=page&id=1821"},
+            {"name": "Ethics and Integrity", "url": "https://www.iaca.int/online/introduction-to-ethics-and-integrity-management/"},
         ],
     },
     {
@@ -82,7 +83,8 @@ DILEMMAS = [
              "feedback": "Falsification and collusion risks; severe misconduct."},
         ],
         "resources": [
-            {"name": "IACA – Procurement Integrity Red Flags", "url": "https://www.iaca.int/resources/procurement-integrity"}
+            {"name": "Fraud and Corruption Prevention in Public Procurement", "url": "https://www.iaca.int/online/fraud-and-corruption-prevention-in-public-procurement/"},
+            {"name": "IACA Implements Tailor-made Training on Addressing Corruption Risks in Privatization Processes", "url": "https://www.iaca.int/resources/news-articles/198-2025/1786-iaca-implements-tailor-made-training-on-addressing-corruption-risks-in-privatization-processes.html"},
         ],
     },
     {
@@ -103,7 +105,8 @@ DILEMMAS = [
              "feedback": "No action enables misconduct and erodes protection frameworks."},
         ],
         "resources": [
-            {"name": "IACA – Whistleblower Protection Brief", "url": "https://www.iaca.int/resources/whistleblower-protection"}
+            {"name": "How to Build a Whistleblowing System to Counter Corruption", "url": "https://www.iaca.int/online/how-to-build-a-whistleblowing-system-to-counter-corruption/"},
+            {"name": "IACA Courses", "url": "https://www.iaca.int/online/"},
         ],
     },
     {
@@ -125,8 +128,8 @@ DILEMMAS = [
              "feedback": "Avoids direct buyer involvement but ignores antitrust red flags that could taint the tender."},
         ],
         "resources": [
-            {"name": "IACA – Collective Action Guidance", "url": "https://www.iaca.int/resources/collective-action"},
-            {"name": "IACA – Competition and Integrity Brief", "url": "https://www.iaca.int/resources/competition-integrity"},
+            {"name": "Anti-Corruption Collective Action Impact Centre", "url": "https://collective-action.iaca.int/"},
+            {"name": "IACA Projects", "url": "https://www.iaca.int/get-involved/iaca-projects.html"},
         ],
     },
     {
@@ -147,8 +150,8 @@ DILEMMAS = [
              "feedback": "Classic red flag. Fragmentation to evade controls increases misconduct risk."},
         ],
         "resources": [
-            {"name": "IACA – Third-Party Due Diligence", "url": "https://www.iaca.int/resources/third-party-due-diligence"},
-            {"name": "IACA – High-Risk Intermediary Checklist", "url": "https://www.iaca.int/resources/intermediary-checklist"},
+            {"name": "Open and Tailor Made Trainings", "url": "https://www.iaca.int/index.php?option=com_sppagebuilder&view=page&id=1821"},
+            {"name": "IACA Courses", "url": "https://www.iaca.int/online/"},
         ],
     },
     {
@@ -169,8 +172,8 @@ DILEMMAS = [
              "feedback": "Protects integrity but ignores operational reality; structured interim controls are better."},
         ],
         "resources": [
-            {"name": "IACA – Emergency Procurement Controls", "url": "https://www.iaca.int/resources/emergency-procurement"},
-            {"name": "IACA – Rapid Contracting Safeguards", "url": "https://www.iaca.int/resources/rapid-contracting"},
+            {"name": "Fraud and Corruption Prevention in Public Procurement", "url": "https://www.iaca.int/online/fraud-and-corruption-prevention-in-public-procurement/"},
+            {"name": "IACA Projects", "url": "https://www.iaca.int/get-involved/iaca-projects.html"},
         ],
     },
     {
@@ -191,8 +194,8 @@ DILEMMAS = [
              "feedback": "Defers the problem; risk remains during the current term."},
         ],
         "resources": [
-            {"name": "IACA – Managing Conflicts of Interest", "url": "https://www.iaca.int/resources/managing-conflicts"},
-            {"name": "IACA – Nepotism Risk Brief", "url": "https://www.iaca.int/resources/nepotism-risk"},
+            {"name": "Ethics and Integrity", "url": "https://www.iaca.int/online/introduction-to-ethics-and-integrity-management/"},
+            {"name": "IACA Implements Tailor-made Training on Addressing Corruption Risks in Privatization Processes", "url": "https://www.iaca.int/resources/news-articles/198-2025/1786-iaca-implements-tailor-made-training-on-addressing-corruption-risks-in-privatization-processes.html"},
         ],
     },
 ]
