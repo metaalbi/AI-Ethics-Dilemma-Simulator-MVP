@@ -2,9 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from uuid import uuid4
-from urllib.parse import urlencode, urlunparse
 import random
-from streamlit.runtime.scriptrunner import script_run_context
 
 # ---------- CONFIG ----------
 st.set_page_config(
@@ -19,46 +17,6 @@ DANGER = "#ef4444"   # red-500
 MUTED = "#64748b"    # slate-500
 
 APP_NAME = "Red Line – Anti-Corruption Simulator"
-FEEDBACK_URL = "https://forms.gle/replace-with-your-form"
-
-
-def build_share_url() -> str:
-    """Return a shareable URL with default UTM parameters."""
-
-    ctx = script_run_context.get_script_run_ctx()
-    scheme = "http"
-    netloc = None
-    path = "/"
-
-    if ctx is not None:
-        headers = getattr(ctx, "request_headers", {}) or {}
-        forwarded_proto = headers.get("X-Forwarded-Proto", "")
-        if forwarded_proto:
-            scheme = forwarded_proto.split(",")[0]
-        host = headers.get("Host")
-        if host:
-            netloc = host
-        forwarded_path = headers.get("X-Forwarded-Path", "")
-        if forwarded_path:
-            path = forwarded_path
-
-    if netloc is None:
-        address = st.get_option("browser.serverAddress")
-        port = st.get_option("browser.serverPort")
-        if str(port) == "443":
-            scheme = "https"
-        if port and str(port) not in ("80", "443"):
-            netloc = f"{address}:{port}"
-        else:
-            netloc = address
-
-    if not path:
-        path = "/"
-    if not path.startswith("/"):
-        path = f"/{path}"
-
-    query = urlencode({"utm_source": "linkedin", "utm_campaign": "mvp_post"})
-    return urlunparse((scheme, netloc, path, "", query, ""))
 
 # ---------- DILEMMAS ----------
 DILEMMAS = [
@@ -81,8 +39,8 @@ DILEMMAS = [
              "feedback": "Transparency helps, but does not address the bribery attempt. Escalation needed."},
         ],
         "resources": [
-            {"name": "Transparency International – Facilitation Payments", "url": "https://www.transparency.org/en/our-priorities/business-integrity/facilitation-payments"},
-            {"name": "OECD Anti-Bribery Convention (overview)", "url": "https://www.oecd.org/corruption/oecdantibriberyconvention.htm"},
+            {"name": "IACA – Brief on Facilitation Payments", "url": "https://www.iaca.int/resources/facilitation-payments"},
+            {"name": "IACA – Anti-Corruption Legal Frameworks", "url": "https://www.iaca.int/resources/legal-frameworks"},
         ],
     },
     {
@@ -103,7 +61,7 @@ DILEMMAS = [
              "feedback": "Direct COI and appearance of bias; undermines RFP integrity."},
         ],
         "resources": [
-            {"name": "COI Guidelines (generic)", "url": "https://www.oecd.org/gov/ethics/48649107.pdf"}
+            {"name": "IACA – Conflict of Interest Toolkit", "url": "https://www.iaca.int/resources/conflict-of-interest"}
         ],
     },
     {
@@ -124,7 +82,7 @@ DILEMMAS = [
              "feedback": "Falsification and collusion risks; severe misconduct."},
         ],
         "resources": [
-            {"name": "World Bank – Red Flags in Procurement", "url": "https://documents.worldbank.org"}
+            {"name": "IACA – Procurement Integrity Red Flags", "url": "https://www.iaca.int/resources/procurement-integrity"}
         ],
     },
     {
@@ -145,7 +103,7 @@ DILEMMAS = [
              "feedback": "No action enables misconduct and erodes protection frameworks."},
         ],
         "resources": [
-            {"name": "EU Whistleblower Protection (overview)", "url": "https://commission.europa.eu/policies/justice-and-fundamental-rights/whistleblower-protection_en"}
+            {"name": "IACA – Whistleblower Protection Brief", "url": "https://www.iaca.int/resources/whistleblower-protection"}
         ],
     },
     {
@@ -167,8 +125,8 @@ DILEMMAS = [
              "feedback": "Avoids direct buyer involvement but ignores antitrust red flags that could taint the tender."},
         ],
         "resources": [
-            {"name": "OECD – Collective Action in Anti-Corruption (but mind competition law)", "url": "https://www.oecd.org/corruption/"},
-            {"name": "ICCA/ICN materials on cartel risks", "url": "https://www.internationalcompetitionnetwork.org/"},
+            {"name": "IACA – Collective Action Guidance", "url": "https://www.iaca.int/resources/collective-action"},
+            {"name": "IACA – Competition and Integrity Brief", "url": "https://www.iaca.int/resources/competition-integrity"},
         ],
     },
     {
@@ -189,8 +147,8 @@ DILEMMAS = [
              "feedback": "Classic red flag. Fragmentation to evade controls increases misconduct risk."},
         ],
         "resources": [
-            {"name": "ISO 37001 (Anti-Bribery) – Third-party controls", "url": "https://www.iso.org/standard/65034.html"},
-            {"name": "FCPA/UKBA guidance on intermediaries", "url": "https://www.justice.gov/criminal-fraud/fcpa"},
+            {"name": "IACA – Third-Party Due Diligence", "url": "https://www.iaca.int/resources/third-party-due-diligence"},
+            {"name": "IACA – High-Risk Intermediary Checklist", "url": "https://www.iaca.int/resources/intermediary-checklist"},
         ],
     },
     {
@@ -211,8 +169,8 @@ DILEMMAS = [
              "feedback": "Protects integrity but ignores operational reality; structured interim controls are better."},
         ],
         "resources": [
-            {"name": "World Bank – Emergency procurement good practice", "url": "https://www.worldbank.org"},
-            {"name": "UNCITRAL – Procurement Model Law (derogations)", "url": "https://uncitral.un.org/"},
+            {"name": "IACA – Emergency Procurement Controls", "url": "https://www.iaca.int/resources/emergency-procurement"},
+            {"name": "IACA – Rapid Contracting Safeguards", "url": "https://www.iaca.int/resources/rapid-contracting"},
         ],
     },
     {
@@ -233,8 +191,8 @@ DILEMMAS = [
              "feedback": "Defers the problem; risk remains during the current term."},
         ],
         "resources": [
-            {"name": "OECD – Managing Conflicts of Interest in the Public Service", "url": "https://www.oecd.org/gov/ethics/"},
-            {"name": "TI – Nepotism & patronage guidance", "url": "https://www.transparency.org/"},
+            {"name": "IACA – Managing Conflicts of Interest", "url": "https://www.iaca.int/resources/managing-conflicts"},
+            {"name": "IACA – Nepotism Risk Brief", "url": "https://www.iaca.int/resources/nepotism-risk"},
         ],
     },
 ]
@@ -375,16 +333,7 @@ if submit and selected is not None:
         use_container_width=True,
     )
 
-    share_link = build_share_url()
-    st.text_input(
-        "Share this experience",
-        value=share_link,
-        help="Copy this link with pre-filled UTM tags to share on social or email.",
-    )
-
-    st.link_button("Give 20-second feedback", FEEDBACK_URL, use_container_width=True)
-
-    st.info("Play another scenario via the selector above, or use the share link to invite colleagues.")
+    st.info("Play another scenario via the selector above and see how different choices compare.")
 
 # ---------- FOOTER ----------
 st.markdown(
